@@ -2,12 +2,12 @@
     <div class="main-header container">
         <h1>
             Recipes for Everyone!
-            <a class="main-logo" href="/">
+            <a class="main-logo" href="{% url 'home' %}">
                 {% for k in "123" %}
                 <i class="fa-solid fa-cookie-bite"></i>
                 {% endfor %}
             </a>
-            <span class="main-logo-text">hello {{username}}, enjoy cooking!</span>
+            <span class="main-logo-text">hello {{ user.username }}, enjoy cooking!</span>
         </h1>
     </div>
 </header>
