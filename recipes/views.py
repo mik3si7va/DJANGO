@@ -1,3 +1,4 @@
+from http.client import HTTPResponse
 from django.shortcuts import render, get_list_or_404
 from django.http import HttpResponse, Http404
 from django.urls import path
@@ -25,11 +26,7 @@ def category(request, cat):
     
     return render(request, 'recipes/pages/category.html', context={'recipes': recipes, 'title': cat_name})
 
-def contact(request):
-    return render(request, 'recipes/contact.html')
 
-def about(request):
-    return HttpResponse("About the Recipes Application")
 
 def recipe_detail(request, id):
     try:
@@ -42,5 +39,11 @@ def recipe_detail(request, id):
     
     return render(request, 'recipes/pages/recipe-view.html', context={ 'id': id, 'recipe': recipe,'is_detail_page': True})
 
+
+def contact(request):
+    return HttpResponse("Contact us at example@example.com")
+
+def about(request):
+    return HttpResponse("About the Recipes Application")
 # Create your views here.
 
