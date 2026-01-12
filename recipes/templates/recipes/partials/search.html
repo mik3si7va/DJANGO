@@ -1,7 +1,7 @@
 <div class="search-container">
-    <form method="GET" class="search-form">
-        <input class="search-input" type="search" name="q" placeholder="Search for recipes..."
-            value="{{ request.GET.q }}">
+    <form action="/search/" method="GET" class="search-form">
+        <input class="search-input" type="search" name="q" value="{{ search_term }}"
+            placeholder="Search for recipes...">
         <button class="search-button" type="submit"><i class="fa-solid fa-magnifying-glass"></i></button>
     </form>
 </div>

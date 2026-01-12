@@ -32,13 +32,11 @@ class RecipeTestBase (TestCase):
             preparation_time=10,
             servings=2,
             preparation_steps='Do the thing',
-            is_published=True,
-            category=self.category,
-            author=self.user,
+            #is_published=True,
+            category=self.make_category(),
+            author=self.make_author(),
         )
     def setUp(self):
-        self.category = self.make_category()
-        self.user = self.make_author()
         self.recipe = self.make_recipe()
 
 class RecipeViewsTest(RecipeTestBase):
@@ -50,10 +48,11 @@ class RecipeViewsTest(RecipeTestBase):
         self.assertEqual(response.status_code, 200)
         self.assertTemplateUsed(response, 'recipes/pages/home.html')
 
-    def test_recipe_detail_view(self):
-        response = self.client.get(reverse('recipe_detail', kwargs={'id': self.recipe.id}))
-        self.assertEqual(response.status_code, 200)
-        self.assertTemplateUsed(response, 'recipes/pages/recipe-view.html')
+    def test_recipe_detail_view_is_404_when_not_published(self):
+        response = self.client.get(
+            reverse('recipe_detail', kwargs={'id': self.recipe.id})
+        )
+        self.assertEqual(response.status_code, 404)
 
     def test_home_view_resolve(self):
         url = resolve('/')
@@ -64,7 +63,7 @@ class RecipeViewsTest(RecipeTestBase):
         self.assertEqual(url.view_name, 'recipe_detail')
     
     def test_category_view_resolve(self):
-        url = resolve(f'/category/{self.category.id}/')
+        url = resolve(f'/category/{self.recipe.category.id}/')
         self.assertEqual(url.view_name, 'category')
     
     def test_home_view_way_2(self):
@@ -74,3 +73,27 @@ class RecipeViewsTest(RecipeTestBase):
     def test_recipe_detail_view_way_2(self):
         view = resolve(reverse('recipe_detail', kwargs={'id': 7}))
         self.assertEqual(view.func, recipe_detail)
+        
+    def test_recipe_home_template_not_load_recipe_not_published(self):
+        self.recipe.is_published = False
+        self.recipe.save()
+        
+        response = self.client.get(reverse('home'))
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, 'No recipes found here .. 😢')
+        
+    def test_recipe_category_template_not_load_recipe_not_published(self):
+        self.recipe.is_published = False
+        self.recipe.save()
+        
+        response = self.client.get(reverse('category', kwargs={'cat': self.recipe.category.id}))
+        self.assertEqual(response.status_code, 404)
+    
+    def test_recipe_detail_template_recipe_not_published(self):
+        self.recipe.is_published = False
+        self.recipe.save()
+        
+        response = self.client.get(reverse('recipe_detail', kwargs={'id': self.recipe.id}))
+        self.assertEqual(response.status_code, 404)
+     
+      

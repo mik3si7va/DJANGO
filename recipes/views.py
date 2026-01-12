@@ -1,5 +1,5 @@
 from http.client import HTTPResponse
-from django.shortcuts import render, get_list_or_404
+from django.shortcuts import redirect, render, get_list_or_404
 from django.http import HttpResponse, Http404
 from django.urls import path
 import recipes
@@ -46,4 +46,16 @@ def contact(request):
 def about(request):
     return HttpResponse("About the Recipes Application")
 # Create your views here.
+def recipe_search(request):
+    search_term = request.GET.get('q', '')
+    
+    if search_term == 'hello world':
+        return redirect('/hello/')  
+    if not search_term:
+        raise Http404("No search term provided.. 😿😢😭\nGo back.. back.. back..")
 
+    recipes = Recipe.objects.filter(is_published=True, title__icontains=search_term).order_by('-created_at')
+    # if not recipes:
+    #     raise Http404("No recipes found matching your search.. 😿😢😭")
+
+    return render(request, 'recipes/pages/search.html', context={'recipes': recipes, 'search_term': search_term})
